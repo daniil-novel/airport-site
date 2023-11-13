@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Airport Information System</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+  <header>
+    <h1>Airport Information System</h1>
+  </header>
+
+  <div>
+    <label for="userType">Select User Type:</label>
+    <select id="userType">
+      <option value="user">User</option>
+      <option value="admin">Admin</option>
+    </select>
+    <button onclick="initialize()">Initialize</button>
+  </div>
+
+<div id="airportInfo" class="container">
+  <!-- Table to display airport information -->
+  <table class="table table-bordered table-striped">
+    <thead class="thead-light">
+      <tr>
+        <th>Flight Number</th>
+        <th>Status</th>
+        <th>Time</th>
+        <th>Route</th>
+        <th>Dispatcher</th>
+      </tr>
+    </thead>
+    <tbody id="flightTableBody"></tbody>
+  </table>
+</div>
+
+  <footer>
+    <p>&copy; 2023 Airport Information System</p>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      initialize();
+    });
+
+    function initialize() {
+      const userType = document.getElementById('userType').value;
+      fetchAirportInfo(userType);
+    }
+
+    function fetchAirportInfo(userType) {
+      const backendApiUrl = `http://127.0.0.1:5000/api/airport_info/${userType}`;
+
+      fetch(backendApiUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          displayAirportInfo(data);
+        })
+        .catch((error) => {
+          console.error('Error fetching airport data:', error);
+        });
+    }
+
+    function displayAirportInfo(data) {
+      const flightTableBody = document.getElementById('flightTableBody');
+      flightTableBody.innerHTML = ''; // Clear existing data
+
+      data.forEach((flight) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${flight.Number}</td>
+          <td>${flight.Status}</td>
+          <td>${flight.Time}</td>
+          <td>${flight.Route}</td>
+          <td>${flight.Dispatcher}</td>
+        `;
+        flightTableBody.appendChild(row);
+      });
+    }
+  </script>
+
+
+  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+
+</body>
+
+</html>

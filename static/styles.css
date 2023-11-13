@@ -1,0 +1,52 @@
+/* styles.css */
+
+body {
+    background-color: #e0eaf1;
+    /* Голубой фон */
+    color: #333;
+    /* Темный текст */
+}
+
+header {
+    background-color: #3498db;
+    /* Яркий синий для шапки */
+    color: #fff;
+    /* Белый текст для шапки */
+    padding: 10px;
+    text-align: center;
+}
+
+div {
+    margin: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #dceaf6; /* Пастельный голубой для четных строк таблицы */
+}
+
+tfoot {
+    background-color: #3498db; /* Яркий синий для подвала таблицы */
+    color: #fff; /* Белый текст для подвала таблицы */
+    font-weight: bold;
+}
+
+footer {
+    background-color: #3498db; /* Яркий синий для подвала страницы */
+    color: #fff; /* Белый текст для подвала страницы */
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
