@@ -14,14 +14,16 @@ db_config = {
     'raise_on_warnings': True
 }
 
-def execute_query(query):
+def execute_query(query, values=None):
     try:
         connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor(dictionary=True)
-        cursor.execute(query)
-        result = cursor.fetchall()
-        connection.commit()
-        return result
+        if values:
+            cursor.execute(query, values)
+        else:
+            cursor.execute(query)
+        connection.commit()  # Добавляем команду commit
+        return cursor.fetchall()
     except mysql.connector.Error as err:
         print(f"Error: {err}")
     finally:
@@ -29,11 +31,14 @@ def execute_query(query):
             cursor.close()
             connection.close()
 
-def execute_query_with_result(query, fetch=True):
+def execute_query_with_result(query, fetch=True, values=None):
     try:
         connection = mysql.connector.connect(**db_config)
         cursor = connection.cursor(dictionary=True)
-        cursor.execute(query)
+        if values:
+            cursor.execute(query, values)
+        else:
+            cursor.execute(query)
         if fetch:
             result = cursor.fetchall()
             return result
@@ -88,7 +93,52 @@ def registration_form():
             return render_template('form_reg_admins.html')
 
     # Если это GET запрос или другие случаи, показываем форму выбора типа пользователя
-    return render_template('form_reg_users.html')  # Можете заменить на 'form_reg_admins.html' если нужно
+    return render_template('form_reg.html', user_type='user')  # или 'admin'
+
+@app.route('/register-user', methods=['GET', 'POST'])
+def register_user():
+    if request.method == 'POST':
+        # Регистрация пользователя
+        username = request.form.get('username')
+        password = request.form.get('password')
+        hometown = request.form.get('hometown')
+
+        # Ваша логика регистрации пользователя
+        insert_user_query = "INSERT INTO Users (username, password, hometown) VALUES (%s, %s, %s);"
+        values = (username, password, hometown)
+        try:
+            execute_query_with_result(insert_user_query, fetch=False, values=values)
+            print("User registered successfully!")
+        except Exception as e:
+            print(f"Error registering user: {e}")
+
+        # После регистрации перенаправляем на главную страницу
+        return redirect(url_for('index'))
+
+    # Если это GET запрос или другие случаи, отобразим форму регистрации пользователя
+    return render_template('form_reg.html')
+
+@app.route('/register-admin', methods=['GET', 'POST'])
+def register_admin():
+    if request.method == 'POST':
+        # Регистрация администратора
+        admin_id = request.form.get('adminId')
+        admin_password = request.form.get('adminPassword')
+
+        # Ваша логика регистрации администратора
+        insert_admin_query = "INSERT INTO Admins (id, password) VALUES (%s, %s);"
+        values = (admin_id, admin_password)
+        try:
+            execute_query_with_result(insert_admin_query, fetch=False, values=values)
+            print("Admin registered successfully!")
+        except Exception as e:
+            print(f"Error registering admin: {e}")
+
+        # После регистрации администратора перенаправляем на главную страницу
+        return redirect(url_for('index'))
+
+    # Если это GET запрос или другие случаи, отобразим форму регистрации администратора
+    return render_template('form_reg.html')
 
 
 if __name__ == '__main__':
